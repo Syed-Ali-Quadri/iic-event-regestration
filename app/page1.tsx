@@ -19,7 +19,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const departments = ["AI&DS", "CSE", "ECE", "MECH", "CIVIL", "IT", "MBA"];
+const departments = [
+  "AI & DS",
+  "CSE",
+  "ECE",
+  "EEE",
+  "Mechanical",
+  "Civil",
+  "IT",
+  "MBA",
+];
+
 const sections = ["A", "B", "C", "D"];
 
 type FormDataType = {
@@ -45,22 +55,12 @@ const initialForm: FormDataType = {
 export default function Home() {
   const [formData, setFormData] = useState<FormDataType>(initialForm);
   const [loading, setLoading] = useState(false);
-
-  // ✅ separated error states
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [formError, setFormError] = useState<string | null>(null);
+  const [error, setError] = useState<string | string[] | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   function updateField(key: keyof FormDataType, value: string) {
     setFormData((prev) => ({ ...prev, [key]: value }));
-
-    // clear only that field error
-    setFieldErrors((prev) => {
-      const { [key]: _, ...rest } = prev;
-      return rest;
-    });
-
-    setFormError(null);
+    setError(null);
     setSuccess(null);
   }
 
@@ -73,18 +73,14 @@ export default function Home() {
       phone: formData.phone.trim(),
       department: formData.department,
       year: formData.year,
-      rollno: formData.rollno.trim(),
+      rollno: formData.rollno.trim().toUpperCase(),
       section: formData.section,
     };
 
     try {
       setLoading(true);
-      setFieldErrors({});
-      setFormError(null);
+      setError(null);
       setSuccess(null);
-
-      // debug 01: 
-      console.log("Clean payload", payload)
 
       const response = await fetch("/api/register", {
         method: "POST",
@@ -98,32 +94,21 @@ export default function Home() {
 
       if (!response.ok) {
         const backendError = apiResponse?.error;
-        // debug 02:
-        console.log("Backend error", backendError)
 
-        // ✅ field errors
-        if (backendError?.fieldErrors) {
-          setFieldErrors(backendError.fieldErrors);
+        if (Array.isArray(backendError)) {
+          setError(backendError);
+        } else if (typeof backendError === "string") {
+          setError(backendError);
+        } else {
+          setError("Something went wrong");
         }
-        // ✅ general error
-        else if (typeof backendError === "string") {
-          setFormError(backendError);
-        }
-        // fallback
-        else {
-          setFormError("Something went wrong");
-        }
-
         return;
       }
-
-      // debug 03:
-      console.log("Success", apiResponse)
 
       setSuccess(apiResponse?.message || "Registration successful!");
       setFormData(initialForm);
     } catch {
-      setFormError("Network error. Try again.");
+      setError("Network error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -132,8 +117,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black p-6 text-slate-100">
       <div className="mx-auto max-w-xl">
-
-
         <Card className="border border-slate-800 bg-slate-900/95 text-slate-100 shadow-2xl">
           <CardHeader className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-500 p-6 shadow-xl">
@@ -168,22 +151,8 @@ export default function Home() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-
-              {/* 🔴 GENERAL ERROR */}
-              {formError && (
-                <div className="rounded-lg border border-red-900/60 bg-red-950/50 p-3 text-sm text-red-300">
-                  {formError}
-                </div>
-              )}
-
-              {/* ✅ Name */}
               <div>
-                <Label>Name</Label>
-                {fieldErrors.name && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.name[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Name</Label>
                 <Input
                   className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
                   name="name"
@@ -194,17 +163,12 @@ export default function Home() {
                 />
               </div>
 
-              {/* ✅ Email */}
               <div>
-                <Label>Email</Label>
-                {fieldErrors.email && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.email[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Email</Label>
                 <Input
                   className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
                   name="email"
+                  type="email"
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
                   placeholder="Enter your email"
@@ -212,14 +176,8 @@ export default function Home() {
                 />
               </div>
 
-              {/* ✅ Phone */}
               <div>
-                <Label>Phone</Label>
-                {fieldErrors.phone && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.phone[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Phone</Label>
                 <Input
                   className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
                   name="phone"
@@ -233,37 +191,13 @@ export default function Home() {
                 />
               </div>
 
-              {/* ✅ Roll No */}
               <div>
-                <Label>Roll No</Label>
-                {fieldErrors.rollno && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.rollno[0]}
-                  </p>
-                )}
-                <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="rollno"
-                  value={formData.rollno}
-                  onChange={(e) => updateField("rollno", e.target.value)}
-                  placeholder="Enter your roll number"
-                  required
-                />
-              </div>
-
-              {/* ✅ Department */}
-              <div>
-                <Label>Department</Label>
-                {fieldErrors.department && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.department[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Department</Label>
                 <Select
                   value={formData.department}
                   onValueChange={(value) => updateField("department", value)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
+                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
@@ -276,19 +210,13 @@ export default function Home() {
                 </Select>
               </div>
 
-              {/* ✅ Year */}
               <div>
-                <Label>Year</Label>
-                {fieldErrors.year && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.year[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Year</Label>
                 <Select
                   value={formData.year}
                   onValueChange={(value) => updateField("year", value)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
+                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
@@ -300,19 +228,25 @@ export default function Home() {
                 </Select>
               </div>
 
-              {/* ✅ Section */}
               <div>
-                <Label>Section</Label>
-                {fieldErrors.section && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.section[0]}
-                  </p>
-                )}
+                <Label className="text-slate-200">Roll No</Label>
+                <Input
+                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
+                  name="rollno"
+                  value={formData.rollno}
+                  onChange={(e) => updateField("rollno", e.target.value)}
+                  placeholder="Enter your roll number"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label className="text-slate-200">Section</Label>
                 <Select
                   value={formData.section}
                   onValueChange={(value) => updateField("section", value)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
+                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
@@ -325,7 +259,21 @@ export default function Home() {
                 </Select>
               </div>
 
-              {/* ✅ Success */}
+              {error && (
+                <div className="rounded-lg border border-red-900/60 bg-red-950/50 p-3 text-sm text-red-300">
+                  <strong>Error:</strong>
+                  {Array.isArray(error) ? (
+                    <ul className="ml-5 mt-2 list-disc">
+                      {error.map((item, index) => (
+                        <li key={`${item}-${index}`}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-1">{error}</p>
+                  )}
+                </div>
+              )}
+
               {success && (
                 <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/40 p-3 text-sm text-emerald-300">
                   {success}
