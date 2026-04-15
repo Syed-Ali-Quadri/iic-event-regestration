@@ -118,7 +118,7 @@ export default function Home() {
       }
 
       // debug 03:
-      console.log("Success", apiResponse)
+      console.log("Success", apiResponse) 
 
       setSuccess(apiResponse?.message || "Registration successful!");
       setFormData(initialForm);
@@ -190,6 +190,7 @@ export default function Home() {
                 )}
                 <Input
                   value={formData.phone}
+                  type="number"
                   onChange={(e) => updateField("phone", e.target.value)}
                 />
               </div>
