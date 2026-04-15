@@ -107,6 +107,8 @@ export default function Home() {
         }
         return;
       }
+      // Debug 03:
+      console.log("response:", apiResponse)
 
       setSuccess(apiResponse?.message || "Registration successful!");
       setFormData(initialForm);
