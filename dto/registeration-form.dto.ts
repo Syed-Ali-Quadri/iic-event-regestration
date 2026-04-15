@@ -9,7 +9,7 @@ class RegistrationFormDto extends ZodClass {
 
         phone: z.string()
             .transform(val => val.replace(/\s+/g, ""))
-            .refine(val => val.length >= 10 && val.length <= 12, {
+            .refine(val => val.length >= 10 && val.length <= 13, {
                 message: "Phone number must be 10–12 digits"
             }),
 
