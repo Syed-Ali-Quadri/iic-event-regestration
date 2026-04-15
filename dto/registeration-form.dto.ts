@@ -8,8 +8,8 @@ class RegistrationFormDto extends ZodClass {
         email: z.email("Invalid email address"),
 
         phone: z.number()
-            .max(12, "Phone number must be at most 12 digits")
-            .min(10, "Phone number must be at least 10 digits"),
+            .max(10, "Phone number must be 10 digits")
+            .min(10, "Phone number must be 10 digits"),
 
         department: z.enum(["CSE", "AI&DS", "IT", "CIVIL", "ECE", "MECH", "MBA"]),
         year: z.enum(["1st", "2nd", "3rd", "4th"]),
