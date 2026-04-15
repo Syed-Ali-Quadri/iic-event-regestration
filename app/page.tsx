@@ -292,10 +292,10 @@ export default function Home() {
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="1st">1</SelectItem>
+                    <SelectItem value="2nd">2</SelectItem>
+                    <SelectItem value="3rd">3</SelectItem>
+                    <SelectItem value="4th">4</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
