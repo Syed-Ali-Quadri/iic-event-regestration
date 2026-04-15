@@ -6,6 +6,7 @@ import Register from "@/model/register.model";
 export async function POST(request: NextRequest) {
     await main();
     const body = await request.json();
+    body.phone = Number(body.phone);
 
     const { success, error, data } = await RegistrationFormDto.validate(body);
 

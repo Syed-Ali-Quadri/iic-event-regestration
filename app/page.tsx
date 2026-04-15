@@ -191,7 +191,7 @@ export default function Home() {
                 <Input
                   value={formData.phone}
                   type="number"
-                  onChange={(e) => updateField("phone", e.target.value)}
+                  onChange={(e) => updateField("phone", (e.target.value))}
                 />
               </div>
 
