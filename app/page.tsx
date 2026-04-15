@@ -139,16 +139,16 @@ export default function Home() {
             <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-500 p-6 shadow-xl">
               <div className="absolute inset-0 bg-white opacity-20 blur-2xl" />
 
-              <div className="absolute right-3 top-3 rounded-xl bg-white/90 p-2 shadow-lg">
+              <div className="absolute right-2 top-2 sm:right-3 sm:top-3 rounded-sm bg-white/90 p-1 sm:p-2 shadow-lg">
                 <img
                   src="/IIC org.png"
                   alt="IIC Logo"
-                  className="h-10 w-10 object-contain"
+                  className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 object-contain"
                 />
               </div>
 
               <div className="relative">
-                <h1 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                <h1 className="text-2xl md:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
                   ASPIRE 2026 🚀
                 </h1>
                 <p className="mt-1 text-sm text-white/90">
