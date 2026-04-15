@@ -261,7 +261,7 @@ export default function Home() {
                 )}
                 <Select
                   value={formData.department}
-                  onValueChange={(value) => updateField("department", value)}
+                  onValueChange={(value) => updateField("department", value as string)}
                 >
                   <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
                     <SelectValue placeholder="Select department" />
@@ -286,7 +286,7 @@ export default function Home() {
                 )}
                 <Select
                   value={formData.year}
-                  onValueChange={(value) => updateField("year", value)}
+                  onValueChange={(value) => updateField("year", value as string)}
                 >
                   <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
                     <SelectValue placeholder="Select year" />
@@ -310,7 +310,7 @@ export default function Home() {
                 )}
                 <Select
                   value={formData.section}
-                  onValueChange={(value) => updateField("section", value)}
+                  onValueChange={(value) => updateField("section", value as string)}
                 >
                   <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
                     <SelectValue placeholder="Select section" />
