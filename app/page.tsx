@@ -19,16 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const departments = [
-  "AI&DS",
-  "CSE",
-  "ECE",
-  "MECH",
-  "CIVIL",
-  "IT",
-  "MBA",
-];
-
+const departments = ["AI&DS", "CSE", "ECE", "MECH", "CIVIL", "IT", "MBA"];
 const sections = ["A", "B", "C", "D"];
 
 type FormDataType = {
@@ -54,12 +45,22 @@ const initialForm: FormDataType = {
 export default function Home() {
   const [formData, setFormData] = useState<FormDataType>(initialForm);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | string[] | null>(null);
+
+  // ✅ separated error states
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   function updateField(key: keyof FormDataType, value: string) {
     setFormData((prev) => ({ ...prev, [key]: value }));
-    setError(null);
+
+    // clear only that field error
+    setFieldErrors((prev) => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+
+    setFormError(null);
     setSuccess(null);
   }
 
@@ -78,11 +79,13 @@ export default function Home() {
 
     try {
       setLoading(true);
-      setError(null);
+      setFieldErrors({});
+      setFormError(null);
       setSuccess(null);
 
-      // debug: 01
-      console.log("Clean output", payload)
+      // debug 01: 
+      console.log("Clean payload", payload)
+
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -94,26 +97,33 @@ export default function Home() {
       const apiResponse = await response.json().catch(() => null);
 
       if (!response.ok) {
-        // debug: 02
-        console.log("Backend error", apiResponse)
         const backendError = apiResponse?.error;
+        // debug 02:
+        console.log("Backend error", backendError)
 
-        if (Array.isArray(backendError)) {
-          setError(backendError);
-        } else if (typeof backendError === "string") {
-          setError(backendError);
-        } else {
-          setError("Something went wrong");
+        // ✅ field errors
+        if (backendError?.fieldErrors) {
+          setFieldErrors(backendError.fieldErrors);
         }
+        // ✅ general error
+        else if (typeof backendError === "string") {
+          setFormError(backendError);
+        }
+        // fallback
+        else {
+          setFormError("Something went wrong");
+        }
+
         return;
       }
-      // Debug 03:
-      console.log("response:", apiResponse)
+
+      // debug 03:
+      console.log("Success", apiResponse)
 
       setSuccess(apiResponse?.message || "Registration successful!");
       setFormData(initialForm);
     } catch {
-      setError("Network error. Try again.");
+      setFormError("Network error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -124,31 +134,9 @@ export default function Home() {
       <div className="mx-auto max-w-xl">
         <Card className="border border-slate-800 bg-slate-900/95 text-slate-100 shadow-2xl">
           <CardHeader className="space-y-4">
-            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-500 p-6 shadow-xl">
-              <div className="absolute inset-0 bg-white opacity-20 blur-2xl" />
-
-              <div className="absolute right-3 top-3 rounded-xl bg-white/90 p-2 shadow-lg">
-                <img
-                  src="/IIC org.png"
-                  alt="IIC Logo"
-                  className="h-10 w-10 object-contain"
-                />
-              </div>
-
-              <div className="relative">
-                <h1 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                  ASPIRE 2026 🚀
-                </h1>
-                <p className="mt-1 text-sm text-white/90">
-                  Innovation • Skills • Leadership
-                </p>
-              </div>
-            </div>
-
             <CardTitle className="text-center text-xl font-semibold text-white">
               Event Registration
             </CardTitle>
-
             <CardDescription className="text-center text-slate-400">
               Secure your seat for the tech event
             </CardDescription>
@@ -156,85 +144,111 @@ export default function Home() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+
+              {/* 🔴 GENERAL ERROR */}
+              {formError && (
+                <div className="rounded-lg border border-red-900/60 bg-red-950/50 p-3 text-sm text-red-300">
+                  {formError}
+                </div>
+              )}
+
+              {/* ✅ Name */}
               <div>
-                <Label className="text-slate-200 mb-2">Name</Label>
+                <Label>Name</Label>
+                {fieldErrors.name && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.name[0]}
+                  </p>
+                )}
                 <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="name"
                   value={formData.name}
                   onChange={(e) => updateField("name", e.target.value)}
-                  placeholder="Enter your name"
-                  required
                 />
               </div>
 
+              {/* ✅ Email */}
               <div>
-                <Label className="text-slate-200 mb-2">Email</Label>
+                <Label>Email</Label>
+                {fieldErrors.email && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.email[0]}
+                  </p>
+                )}
                 <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="email"
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
-                  placeholder="Enter your email"
-                  required
                 />
               </div>
 
+              {/* ✅ Phone */}
               <div>
-                <Label className="text-slate-200 mb-2">Phone</Label>
+                <Label>Phone</Label>
+                {fieldErrors.phone && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.phone[0]}
+                  </p>
+                )}
                 <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="phone"
                   value={formData.phone}
-                  onChange={(e) =>
-                    updateField("phone", e.target.value)
-                  }
-                  placeholder="Enter 10-digit phone number"
-                  required
+                  onChange={(e) => updateField("phone", e.target.value)}
                 />
               </div>
 
+              {/* ✅ Roll No */}
               <div>
-                <Label className="text-slate-200 mb-2">Roll No</Label>
+                <Label>Roll No</Label>
+                {fieldErrors.rollno && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.rollno[0]}
+                  </p>
+                )}
                 <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="rollno"
                   value={formData.rollno}
                   onChange={(e) => updateField("rollno", e.target.value)}
-                  placeholder="Enter your roll number"
-                  required
                 />
               </div>
 
+              {/* ✅ Department */}
               <div>
-                <Label className="text-slate-200 mb-2">Department</Label>
+                <Label>Department</Label>
+                {fieldErrors.department && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.department[0]}
+                  </p>
+                )}
                 <Select
                   value={formData.department}
-                  onValueChange={(value) => updateField("department", value as string)}
+                  onValueChange={(v) => updateField("department", v as string)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    {departments.map((department) => (
-                      <SelectItem key={department} value={department}>
-                        {department}
+                  <SelectContent>
+                    {departments.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* ✅ Year */}
               <div>
-                <Label className="text-slate-200 mb-2">Year</Label>
+                <Label>Year</Label>
+                {fieldErrors.year && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.year[0]}
+                  </p>
+                )}
                 <Select
                   value={formData.year}
-                  onValueChange={(value) => updateField("year", value as string)}
+                  onValueChange={(v) => updateField("year", v as string)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
+                  <SelectContent>
                     <SelectItem value="1st">1</SelectItem>
                     <SelectItem value="2nd">2</SelectItem>
                     <SelectItem value="3rd">3</SelectItem>
@@ -243,51 +257,39 @@ export default function Home() {
                 </Select>
               </div>
 
+              {/* ✅ Section */}
               <div>
-                <Label className="text-slate-200 mb-2">Section</Label>
+                <Label>Section</Label>
+                {fieldErrors.section && (
+                  <p className="text-red-400 text-sm mb-1">
+                    {fieldErrors.section[0]}
+                  </p>
+                )}
                 <Select
                   value={formData.section}
-                  onValueChange={(value) => updateField("section", value as string)}
+                  onValueChange={(v) => updateField("section", v as string)}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    {sections.map((section) => (
-                      <SelectItem key={section} value={section}>
-                        {section}
+                  <SelectContent>
+                    {sections.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {error && (
-                <div className="rounded-lg border border-red-900/60 bg-red-950/50 p-3 text-sm text-red-300">
-                  <strong>Error:</strong>
-                  {Array.isArray(error) ? (
-                    <ul className="ml-5 mt-2 list-disc">
-                      {error.map((item, index) => (
-                        <li key={`${item}-${index}`}>{item}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="mt-1">{error}</p>
-                  )}
-                </div>
-              )}
-
+              {/* ✅ Success */}
               {success && (
                 <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/40 p-3 text-sm text-emerald-300">
                   {success}
                 </div>
               )}
 
-              <Button
-                className="w-full bg-white text-slate-950 hover:bg-slate-200"
-                disabled={loading}
-                type="submit"
-              >
+              <Button disabled={loading} type="submit" className="w-full">
                 {loading ? "Submitting..." : "Register"}
               </Button>
             </form>
