@@ -81,6 +81,7 @@ export default function Home() {
       setError(null);
       setSuccess(null);
 
+      // debug: 01
       console.log("Clean output", payload)
       const response = await fetch("/api/register", {
         method: "POST",
@@ -93,6 +94,8 @@ export default function Home() {
       const apiResponse = await response.json().catch(() => null);
 
       if (!response.ok) {
+        // debug: 02
+        console.log("Backend error", apiResponse)
         const backendError = apiResponse?.error;
 
         if (Array.isArray(backendError)) {
