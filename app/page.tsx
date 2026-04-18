@@ -1,139 +1,13 @@
-"use client";
-
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const departments = ["AI&DS", "CSE", "ECE", "MECH", "CIVIL", "IT", "MBA"];
-const sections = ["A", "B", "C", "D"];
-
-type FormDataType = {
-  name: string;
-  email: string;
-  phone: string;
-  department: string;
-  year: string;
-  rollno: string;
-  section: string;
-};
-
-const initialForm: FormDataType = {
-  name: "",
-  email: "",
-  phone: "",
-  department: "",
-  year: "",
-  rollno: "",
-  section: "",
-};
 
 export default function Home() {
-  const [formData, setFormData] = useState<FormDataType>(initialForm);
-  const [loading, setLoading] = useState(false);
-
-  // ✅ separated error states
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  function updateField(key: keyof FormDataType, value: string) {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-
-    // clear only that field error
-    setFieldErrors((prev) => {
-      const { [key]: _, ...rest } = prev;
-      return rest;
-    });
-
-    setFormError(null);
-    setSuccess(null);
-  }
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const payload: FormDataType = {
-      name: formData.name.trim(),
-      email: formData.email.trim().toLowerCase(),
-      phone: formData.phone.trim(),
-      department: formData.department,
-      year: formData.year,
-      rollno: formData.rollno.trim(),
-      section: formData.section,
-    };
-
-    try {
-      setLoading(true);
-      setFieldErrors({});
-      setFormError(null);
-      setSuccess(null);
-
-      // debug 01: 
-      console.log("Clean payload", payload)
-
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const apiResponse = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        const backendError = apiResponse?.error;
-        // debug 02:
-        console.log("Backend error", backendError)
-
-        // ✅ field errors
-        if (backendError?.fieldErrors) {
-          setFieldErrors(backendError.fieldErrors);
-        }
-        // ✅ general error
-        else if (typeof backendError === "string") {
-          setFormError(backendError);
-        }
-        // fallback
-        else {
-          setFormError("Something went wrong");
-        }
-
-        return;
-      }
-
-      // debug 03:
-      console.log("Success", apiResponse)
-
-      setSuccess(apiResponse?.message || "Registration successful!");
-      setFormData(initialForm);
-    } catch {
-      setFormError("Network error. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black p-6 text-slate-100">
-      <div className="mx-auto max-w-xl">
-
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black p-6 text-slate-100 flex items-center justify-center">
+      <div className="mx-auto max-w-xl w-full">
         <Card className="border border-slate-800 bg-slate-900/95 text-slate-100 shadow-2xl">
           <CardHeader className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-500 p-6 shadow-xl">
@@ -156,190 +30,42 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            <CardTitle className="text-center text-xl font-semibold text-white">
-              Event Registration
-            </CardTitle>
-
-            <CardDescription className="text-center text-slate-400">
-              Secure your seat for the tech event
-            </CardDescription>
           </CardHeader>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-              {/* 🔴 GENERAL ERROR */}
-              {formError && (
-                <div className="rounded-lg border border-red-900/60 bg-red-950/50 p-3 text-sm text-red-300">
-                  {formError}
-                </div>
-              )}
-
-              {/* ✅ Name */}
-              <div>
-                <Label>Name</Label>
-                {fieldErrors.name && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.name[0]}
-                  </p>
-                )}
-                <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="name"
-                  value={formData.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-
-              {/* ✅ Email */}
-              <div>
-                <Label>Email</Label>
-                {fieldErrors.email && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.email[0]}
-                  </p>
-                )}
-                <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-
-              {/* ✅ Phone */}
-              <div>
-                <Label>Phone</Label>
-                {fieldErrors.phone && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.phone[0]}
-                  </p>
-                )}
-                <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    updateField("phone", e.target.value.replace(/\D/g, ""))
-                  }
-                  placeholder="Enter 10-digit phone number"
-                  maxLength={10}
-                  required
-                />
-              </div>
-
-              {/* ✅ Roll No */}
-              <div>
-                <Label>Roll No</Label>
-                {fieldErrors.rollno && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.rollno[0]}
-                  </p>
-                )}
-                <Input
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500"
-                  name="rollno"
-                  value={formData.rollno}
-                  onChange={(e) => updateField("rollno", e.target.value)}
-                  placeholder="Enter your roll number"
-                  required
-                />
-              </div>
-
-              {/* ✅ Department */}
-              <div>
-                <Label>Department</Label>
-                {fieldErrors.department && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.department[0]}
-                  </p>
-                )}
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) => updateField("department", value as string)}
+          <CardContent className="py-10">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-950/50 border border-red-900/60">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
                 >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    {departments.map((department) => (
-                      <SelectItem key={department} value={department}>
-                        {department}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 15v.01M12 9v3m0 0a9 9 0 110 0 9 9 0 010 0z"
+                  />
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
               </div>
 
-              {/* ✅ Year */}
-              <div>
-                <Label>Year</Label>
-                {fieldErrors.year && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.year[0]}
-                  </p>
-                )}
-                <Select
-                  value={formData.year}
-                  onValueChange={(value) => updateField("year", value as string)}
-                >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    <SelectItem value="1st">1</SelectItem>
-                    <SelectItem value="2nd">2</SelectItem>
-                    <SelectItem value="3rd">3</SelectItem>
-                    <SelectItem value="4th">4</SelectItem>
-                  </SelectContent>
-                </Select>
+              <h2 className="text-2xl font-bold text-white">
+                Registration Closed
+              </h2>
+
+              <p className="text-slate-400 max-w-sm">
+                Registrations for <span className="text-white font-semibold">ASPIRE 2026</span> are now closed. Thank you for your interest!
+              </p>
+
+              <div className="rounded-lg border border-slate-800 bg-slate-800/50 px-5 py-3 mt-2">
+                <p className="text-sm text-slate-400">
+                  For any queries, contact the IIC team.
+                </p>
               </div>
-
-              {/* ✅ Section */}
-              <div>
-                <Label>Section</Label>
-                {fieldErrors.section && (
-                  <p className="text-red-400 text-sm mb-1">
-                    {fieldErrors.section[0]}
-                  </p>
-                )}
-                <Select
-                  value={formData.section}
-                  onValueChange={(value) => updateField("section", value as string)}
-                >
-                  <SelectTrigger className="border-slate-700 bg-slate-800 text-slate-100 w-full">
-                    <SelectValue placeholder="Select section" />
-                  </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-                    {sections.map((section) => (
-                      <SelectItem key={section} value={section}>
-                        {section}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* ✅ Success */}
-              {success && (
-                <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/40 p-3 text-sm text-emerald-300">
-                  {success}
-                </div>
-              )}
-
-              <Button
-                className="w-full bg-white text-slate-950 hover:bg-slate-200"
-                disabled={loading}
-                type="submit"
-              >
-                {loading ? "Submitting..." : "Register"}
-              </Button>
-            </form>
+            </div>
           </CardContent>
         </Card>
       </div>
