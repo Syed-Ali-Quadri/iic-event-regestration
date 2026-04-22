@@ -56,29 +56,57 @@ export default function QRScannerPage() {
     return () => { document.head.removeChild(script); };
   }, [addLog]);
 
-  const onScan = useCallback((data: string) => {
+  const resumeScanning = useCallback(() => {
+    cooldownRef.current = false;
+    lastScannedRef.current = null;
+    setStatus('scanning');
+    const video = videoRef.current;
+    if (video && video.paused && streamRef.current) {
+      video.play().then(() => { tick(); });
+    }
+  }, []);
+
+  const onScan = useCallback(async (data: string) => {
     setScanCount(prev => prev + 1);
 
-    console.log('%c[QR SCAN]', 'color:#1D9E75; font-weight:bold; font-size:14px;');
-    console.log('%cRaw data → ', 'color:#888', data);
-    try {
-      const parsed = JSON.parse(data);
-      console.log('%cParsed JSON → ', 'color:#378ADD', parsed);
-    } catch {
-      console.log('%c(plain text, not JSON)', 'color:#aaa');
-    }
-
-    addLog(data);
-    setStatus('detected');
-
-    // Freeze video for 5 seconds
+    // Freeze video immediately
     const video = videoRef.current;
     if (video) video.pause();
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
-  }, [addLog]);
+
+    setStatus('detected');
+
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: data }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        const errMsg = json?.error || 'Verification failed';
+        console.log('%c[ERROR]', 'color:#A32D2D; font-weight:bold;', errMsg);
+        addLog(errMsg, true);
+        setStatus('error');
+      } else {
+        const name = json?.existUser?.name || 'Unknown';
+        console.log('%c✅ Checked in:', 'color:#1D9E75; font-weight:bold; font-size:14px;', name);
+        addLog(`✅ Checked in: ${name}`);
+      }
+    } catch {
+      console.log('%c[ERROR]', 'color:#A32D2D; font-weight:bold;', 'Network error');
+      addLog('Network error — could not reach server', true);
+      setStatus('error');
+    } finally {
+      // Unfreeze after API completes
+      resumeScanning();
+    }
+  }, [addLog, resumeScanning]);
 
   const tick = useCallback(() => {
     const video = videoRef.current;
@@ -99,17 +127,7 @@ export default function QRScannerPage() {
         lastScannedRef.current = code.data;
         cooldownRef.current = true;
         onScan(code.data);
-        // Resume after 5 seconds
-        setTimeout(() => {
-          cooldownRef.current = false;
-          lastScannedRef.current = null;
-          setStatus('scanning');
-          const video = videoRef.current;
-          if (video && video.paused && streamRef.current) {
-            video.play().then(() => { tick(); });
-          }
-        }, 5000);
-        return; // stop the loop — tick() restarts after 5s
+        return; // stop the loop — resumeScanning() restarts it
       }
     }
     animFrameRef.current = requestAnimationFrame(tick);

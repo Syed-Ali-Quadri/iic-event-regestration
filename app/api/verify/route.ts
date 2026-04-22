@@ -3,7 +3,7 @@ import main from "@/config/db";
 
 import Register from "@/model/register.model";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         await main();
 
@@ -22,6 +22,13 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(
                 { error: "Slug not found" },
                 { status: 404 }
+            );
+        }
+
+        if(existUser.checkedIn) {
+            return NextResponse.json(
+                { error: "Already checked in" },
+                { status: 400 }
             );
         }
 
