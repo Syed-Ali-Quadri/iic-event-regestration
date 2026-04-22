@@ -48,6 +48,23 @@ const registerSchema = new mongoose.Schema({
         required: true,
         enum: ["A", "B", "C", "D"],
     },
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    checkedIn: {
+        default: false,
+        type: Boolean
+    },
+    checkedInAt: {
+        default: null,
+        type: Date
+    },
+    attend: {
+        default: false,
+        type: Boolean,
+    }
 }, { timestamps: true });
 
-export default mongoose.model("Register", registerSchema);
+export default mongoose.model("Register", registerSchema, "registers", { overwriteModels: true });

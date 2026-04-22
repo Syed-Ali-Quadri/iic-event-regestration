@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import RegistrationFormDto from "@/dto/registeration-form.dto";
 import main from "@/config/db";
 import Register from "@/model/register.model";
+import generateSlug from "@/lib/generate-slug";
+import sendEmail from "@/config/email-service";
 
 export async function POST(request: NextRequest) {
     await main();
@@ -26,11 +28,26 @@ export async function POST(request: NextRequest) {
         );
     }
 
+    const slug = generateSlug();
+    // @ts-ignore
+    data.slug = slug;
+
     // @ts-ignore
     const register = await Register.create(data);
     if (!register) {
         return NextResponse.json(
             { error: "Failed to register" },
+            { status: 500 }
+        );
+    }
+
+    const ticketLink = `${process.env.NEXT_PUBLIC_BASE_URL}/events/ticket/${slug}`;
+
+    // @ts-ignore
+    const sendEmailService = await sendEmail(data.email, ticketLink);
+    if (!sendEmailService.success) {
+        return NextResponse.json(
+            { error: "Failed to send email" },
             { status: 500 }
         );
     }
