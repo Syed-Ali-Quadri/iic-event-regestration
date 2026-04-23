@@ -44,10 +44,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
               <div className="relative space-y-1">
                 <h1 className="text-2xl md:text-4xl font-black tracking-tight text-white drop-shadow-md">
-                  INNOVATE 2026 ✨
+                  AI Automation Masterclass ✨
                 </h1>
                 <p className="text-indigo-100 font-medium text-sm sm:text-base opacity-90">
-                  Ideate • Prototype • Succeed
+                  AI • Automation • Empower
                 </p>
               </div>
             </div>

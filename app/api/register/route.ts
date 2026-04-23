@@ -4,6 +4,7 @@ import main from "@/config/db";
 import Register from "@/model/register.model";
 import generateSlug from "@/lib/generate-slug";
 import sendEmail from "@/config/email-service";
+import sendEmailByBrevo from "@/config/email-service1";
 
 export async function POST(request: NextRequest) {
     await main();
@@ -44,12 +45,24 @@ export async function POST(request: NextRequest) {
     const ticketLink = `${process.env.NEXT_PUBLIC_BASE_URL}/events/ticket/${slug}`;
 
     // @ts-ignore
-    const sendEmailService = await sendEmail(data.email, ticketLink);
-    if (!sendEmailService.success) {
-        return NextResponse.json(
-            { error: "Failed to send email" },
-            { status: 500 }
-        );
+    if (process.env.DISABLE_RESEND_SERVICE === "true") {
+        // @ts-ignore
+        const sendEmailService = await sendEmailByBrevo(data.email, ticketLink);
+        if (!sendEmailService.success) {
+            return NextResponse.json(
+                { error: "Failed to send email" },
+                { status: 500 }
+            );
+        }
+    } else if (process.env.DISABLE_RESEND_SERVICE === "false") {
+        // @ts-ignore
+        const sendEmailService = await sendEmail(data.email, ticketLink);
+        if (!sendEmailService.success) {
+            return NextResponse.json(
+                { error: "Failed to send email" },
+                { status: 500 }
+            );
+        }
     }
 
     return NextResponse.json(

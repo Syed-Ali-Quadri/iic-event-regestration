@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aspire Event - Registration Form",
-  description: "Registration Form for Aspire Event, hosted by the IIC club of ISL engineering college",
+  title: "AI Automation Masterclass - Registration Form",
+  description: "Registration Form for AI Automation Masterclass, hosted by the IIC club of ISL engineering college",
 };
 
 export default function RootLayout({
