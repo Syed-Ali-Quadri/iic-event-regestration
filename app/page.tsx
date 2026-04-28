@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const departments = ["AI&DS", "CSE", "ECE", "MECH", "CIVIL", "IT", "MBA"];
@@ -295,7 +296,7 @@ export default function Home() {
             <div className="relative p-6 sm:p-8 bg-gradient-to-br from-indigo-600 via-violet-700 to-fuchsia-600">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
               <div className="absolute right-4 top-4 rounded-full bg-white p-1 border-2 border-white/40 shadow-xl">
-                <img src="/iic org.png" alt="ISLEC IIC Council" className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover" />
+                <Image src="/iic org.png" alt="ISLEC IIC Council" className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover" width={100} height={100}/>
               </div>
               <div className="relative space-y-1">
                 <p className="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-200/80 mb-2">
