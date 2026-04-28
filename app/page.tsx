@@ -383,7 +383,7 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <StyledLabel>Dept</StyledLabel>
-                    <Select value={formData.department} onValueChange={(v) => updateField("department", v)}>
+                    <Select value={formData.department} onValueChange={(v) => updateField("department", v as string)}>
                       <SelectTrigger className={triggerCls(!!fieldErrors.department)}>
                         <SelectValue placeholder="Dept" />
                       </SelectTrigger>
@@ -395,7 +395,7 @@ export default function Home() {
                   </div>
                   <div className="space-y-1.5">
                     <StyledLabel>Year</StyledLabel>
-                    <Select value={formData.year} onValueChange={(v) => updateField("year", v)}>
+                    <Select value={formData.year} onValueChange={(v) => updateField("year", v as string)}>
                       <SelectTrigger className={triggerCls(!!fieldErrors.year)}>
                         <SelectValue placeholder="Year" />
                       </SelectTrigger>
@@ -410,7 +410,7 @@ export default function Home() {
                   </div>
                   <div className="space-y-1.5">
                     <StyledLabel>Section</StyledLabel>
-                    <Select value={formData.section} onValueChange={(v) => updateField("section", v)}>
+                    <Select value={formData.section} onValueChange={(v) => updateField("section", v as string)}>
                       <SelectTrigger className={triggerCls(!!fieldErrors.section)}>
                         <SelectValue placeholder="Sec" />
                       </SelectTrigger>
@@ -493,7 +493,7 @@ export default function Home() {
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                           <StyledLabel>Year</StyledLabel>
-                          <Select value={m.year} onValueChange={(v) => updateMember(i, "year", v)}>
+                          <Select value={m.year} onValueChange={(v) => updateMember(i, "year", v as string)}>
                             <SelectTrigger className={triggerCls(!!me.year)}>
                               <SelectValue placeholder="Year" />
                             </SelectTrigger>
@@ -508,7 +508,7 @@ export default function Home() {
                         </div>
                         <div className="space-y-1.5">
                           <StyledLabel>Section</StyledLabel>
-                          <Select value={m.section} onValueChange={(v) => updateMember(i, "section", v)}>
+                          <Select value={m.section} onValueChange={(v) => updateMember(i, "section", v as string)}>
                             <SelectTrigger className={triggerCls(!!me.section)}>
                               <SelectValue placeholder="Section" />
                             </SelectTrigger>
