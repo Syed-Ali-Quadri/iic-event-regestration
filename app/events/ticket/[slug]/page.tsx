@@ -44,10 +44,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
               <div className="relative space-y-1">
                 <h1 className="text-2xl md:text-4xl font-black tracking-tight text-white drop-shadow-md">
-                  AI Automation Masterclass ✨
+                  Innogrid 2.0 🚀
                 </h1>
                 <p className="text-indigo-100 font-medium text-sm sm:text-base opacity-90">
-                  AI • Automation • Empower
+                  Build • Showcase • Technology
                 </p>
               </div>
             </div>

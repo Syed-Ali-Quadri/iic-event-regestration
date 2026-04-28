@@ -8,7 +8,7 @@ export default async function sendEmail(to: string, url: string) {
         value = await resend.emails.send({
             from: 'noreply@iic.islec.edu.in',
             to: to,
-            subject: "You're registered! — AI Automation Masterclass",
+            subject: "You're registered! — Innogrid 2.0",
             html: `
 <!DOCTYPE html>
 <html lang="en">
@@ -29,10 +29,10 @@ export default async function sendEmail(to: string, url: string) {
             <td style="padding:40px 32px;">
 
               <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#ffffff;">
-                AI Automation Masterclass
+                Innogrid 2.0 🚀
               </h1>
               <p style="margin:0 0 24px;font-size:13px;color:#94a3b8;">
-                By Ali Asgar &nbsp;·&nbsp; IIC ISLEC
+                By IIC ISLEC
               </p>
 
               <p style="margin:0 0 8px;font-size:15px;color:#e2e8f0;">
