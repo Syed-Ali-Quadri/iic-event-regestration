@@ -12,7 +12,7 @@ import Image from "next/image";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const departments = ["AI&DS", "CSE", "ECE", "MECH", "CIVIL", "IT", "MBA"];
-const sections    = ["A", "B", "C", "D"];
+const sections = ["A", "B", "C", "D"];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TeamMember = { name: string; rollno: string; year: string; section: string };
@@ -25,7 +25,7 @@ type FormDataType = {
   members: TeamMember[];
 };
 
-type FieldErrors  = Record<string, string>;
+type FieldErrors = Record<string, string>;
 type MemberErrors = Record<number, Record<string, string>>;
 
 const emptyMember = (): TeamMember => ({ name: "", rollno: "", year: "", section: "" });
@@ -40,40 +40,40 @@ const initialForm: FormDataType = {
 
 // ─── Validation ───────────────────────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const ROLL_RE  = /^[A-Za-z0-9]{6,15}$/;
+const ROLL_RE = /^[A-Za-z0-9]{6,15}$/;
 
 function validateForm(data: FormDataType): {
   fieldErrors: FieldErrors; memberErrors: MemberErrors; valid: boolean;
 } {
-  const fieldErrors: FieldErrors   = {};
+  const fieldErrors: FieldErrors = {};
   const memberErrors: MemberErrors = {};
 
   // Leader
-  if (!data.leaderName.trim())                fieldErrors.leaderName  = "Full name is required.";
-  else if (data.leaderName.trim().length < 3) fieldErrors.leaderName  = "Name must be at least 3 characters.";
+  if (!data.leaderName.trim()) fieldErrors.leaderName = "Full name is required.";
+  else if (data.leaderName.trim().length < 3) fieldErrors.leaderName = "Name must be at least 3 characters.";
 
-  if (!data.email.trim())                     fieldErrors.email       = "Email address is required.";
-  else if (!EMAIL_RE.test(data.email))        fieldErrors.email       = "Enter a valid email address.";
+  if (!data.email.trim()) fieldErrors.email = "Email address is required.";
+  else if (!EMAIL_RE.test(data.email)) fieldErrors.email = "Enter a valid email address.";
 
-  if (!data.phone.trim())                     fieldErrors.phone       = "Phone number is required.";
-  else if (data.phone.length !== 10)          fieldErrors.phone       = "Phone must be exactly 10 digits.";
+  if (!data.phone.trim()) fieldErrors.phone = "Phone number is required.";
+  else if (data.phone.length !== 10) fieldErrors.phone = "Phone must be exactly 10 digits.";
 
-  if (!data.rollno.trim())                    fieldErrors.rollno      = "Roll number is required.";
-  else if (!ROLL_RE.test(data.rollno))        fieldErrors.rollno      = "Invalid roll number format (6–15 alphanumeric).";
+  if (!data.rollno.trim()) fieldErrors.rollno = "Roll number is required.";
+  else if (!ROLL_RE.test(data.rollno)) fieldErrors.rollno = "Invalid roll number format (6–15 alphanumeric).";
 
-  if (!data.department)                       fieldErrors.department  = "Select a department.";
-  if (!data.year)                             fieldErrors.year        = "Select your year.";
-  if (!data.section)                          fieldErrors.section     = "Select your section.";
+  if (!data.department) fieldErrors.department = "Select a department.";
+  if (!data.year) fieldErrors.year = "Select your year.";
+  if (!data.section) fieldErrors.section = "Select your section.";
 
   // College                                                           // ← added
-  if (!data.college.trim())                   fieldErrors.college     = "College name is required.";
-  else if (data.college.trim().length < 2)    fieldErrors.college     = "College name must be at least 2 characters.";
+  if (!data.college.trim()) fieldErrors.college = "College name is required.";
+  else if (data.college.trim().length < 2) fieldErrors.college = "College name must be at least 2 characters.";
 
   // Team
-  if (!data.teamName.trim())                  fieldErrors.teamName    = "Team name is required.";
-  else if (data.teamName.trim().length < 3)   fieldErrors.teamName    = "Team name must be at least 3 characters.";
+  if (!data.teamName.trim()) fieldErrors.teamName = "Team name is required.";
+  else if (data.teamName.trim().length < 3) fieldErrors.teamName = "Team name must be at least 3 characters.";
 
-  if (!data.projectTitle.trim())              fieldErrors.projectTitle = "Project title is required.";
+  if (!data.projectTitle.trim()) fieldErrors.projectTitle = "Project title is required.";
 
   // Members — validate only if the row is partially filled
   data.members.forEach((m, i) => {
@@ -81,12 +81,12 @@ function validateForm(data: FormDataType): {
     if (!anyFilled) return;
 
     const errs: Record<string, string> = {};
-    if (!m.name.trim())               errs.name    = "Name is required.";
-    if (!m.rollno.trim())             errs.rollno  = "Roll number is required.";
-    else if (!ROLL_RE.test(m.rollno)) errs.rollno  = "Invalid roll number format.";
-    if (!m.year)                      errs.year    = "Select year.";
-    if (!m.section)                   errs.section = "Select section.";
-    if (Object.keys(errs).length)     memberErrors[i] = errs;
+    if (!m.name.trim()) errs.name = "Name is required.";
+    if (!m.rollno.trim()) errs.rollno = "Roll number is required.";
+    else if (!ROLL_RE.test(m.rollno)) errs.rollno = "Invalid roll number format.";
+    if (!m.year) errs.year = "Select year.";
+    if (!m.section) errs.section = "Select section.";
+    if (Object.keys(errs).length) memberErrors[i] = errs;
   });
 
   return {
@@ -146,15 +146,15 @@ const SectionHeading = ({ icon, title, subtitle }: {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [formData,     setFormData]     = useState<FormDataType>(initialForm);
-  const [memberKeys,   setMemberKeys]   = useState<number[]>([Date.now()]);
-  const [fieldErrors,  setFieldErrors]  = useState<FieldErrors>({});
+  const [formData, setFormData] = useState<FormDataType>(initialForm);
+  const [memberKeys, setMemberKeys] = useState<number[]>([Date.now()]);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [memberErrors, setMemberErrors] = useState<MemberErrors>({});
-  const [formError,    setFormError]    = useState<string | null>(null);
-  const [success,      setSuccess]      = useState<string | null>(null);
-  const [loading,      setLoading]      = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const formRef  = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
   // ── field helpers ──────────────────────────────────────────────────────────
@@ -233,7 +233,7 @@ export default function Home() {
         const backendError = apiResponse?.error;
 
         if (backendError?.fieldErrors) {
-          const beField: FieldErrors   = {};
+          const beField: FieldErrors = {};
           const beMember: MemberErrors = {};
 
           Object.entries(backendError.fieldErrors as Record<string, string[]>).forEach(([key, msgs]) => {
@@ -282,7 +282,7 @@ export default function Home() {
 
   // ── derived ────────────────────────────────────────────────────────────────
   const totalMembers = 1 + formData.members.length;
-  const errorCount   =
+  const errorCount =
     Object.keys(fieldErrors).length +
     Object.values(memberErrors).reduce((a, e) => a + Object.keys(e).length, 0);
 
@@ -296,11 +296,11 @@ export default function Home() {
             <div className="relative p-6 sm:p-8 bg-gradient-to-br from-indigo-600 via-violet-700 to-fuchsia-600">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
               <div className="absolute right-4 top-4 rounded-full bg-white p-1 border-2 border-white/40 shadow-xl">
-                <Image src="/iic org.png" alt="ISLEC IIC Council" className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover" width={100} height={100}/>
+                <Image src="/iic org.png" alt="ISLEC IIC Council" className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover" width={100} height={100} />
               </div>
               <div className="relative space-y-1">
                 <p className="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-200/80 mb-2">
-                  ISL Engineering College · IIC
+                  ISLEC · IIC
                 </p>
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white drop-shadow-md">
                   Innogrid 2.0 🚀
@@ -451,7 +451,7 @@ export default function Home() {
 
               <div className="space-y-3">
                 {formData.members.map((m, i) => {
-                  const me     = memberErrors[i] ?? {};
+                  const me = memberErrors[i] ?? {};
                   const hasErr = !!Object.keys(me).length;
                   return (
                     <div
