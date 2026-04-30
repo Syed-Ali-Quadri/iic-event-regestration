@@ -94,7 +94,7 @@ export default function QRScannerPage() {
         addLog(errMsg, true);
         setStatus('error');
       } else {
-        const name = json?.existUser?.leaderName || 'Unknown';
+        const name = json?.existUser?.teamName || 'Unknown';
         console.log('%c✅ Checked in:', 'color:#1D9E75; font-weight:bold; font-size:14px;', name);
         addLog(`✅ Checked in: ${name}`);
       }
